@@ -1,0 +1,21 @@
+{
+  "name": "thymleaf-example-frontend",
+  "version": "1.0.0",
+  "description": "Frontend dependencies for Thymeleaf Spring Boot application",
+  "scripts": {
+    "build": "tailwindcss -i ./src/main/resources/static/css/tailwind.css -o ./src/main/resources/static/css/output.css --watch",
+    "build:prod": "tailwindcss -i ./src/main/resources/static/css/tailwind.css -o ./src/main/resources/static/css/output.css --minify"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.7",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^2.0.0"
+  }
+}

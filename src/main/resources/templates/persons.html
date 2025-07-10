@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Person Registry</title>
+    <link href="/css/output.css" rel="stylesheet">
+    <link href="/css/globals.css" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-7xl mx-auto">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 text-center">Person Registry</h1>
+                <p class="text-gray-600 text-center mt-2">Manage passport information and status</p>
+            </div>
+        
+            <!-- Search Section -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                <form th:action="@{/persons/search}" method="get" class="flex flex-wrap gap-4 items-center justify-center">
+                    <select name="searchType" th:value="${searchType}" class="form-select">
+                        <option value="name" th:selected="${searchType == 'name'}">Search by Name</option>
+                        <option value="passportId" th:selected="${searchType == 'passportId'}">Search by Passport ID</option>
+                    </select>
+                    <input type="text" name="searchTerm" th:value="${searchTerm}" 
+                           placeholder="Enter search term..." class="form-input min-w-[200px]" />
+                    <button type="submit" class="btn-primary">Search</button>
+                    <a href="/persons" class="btn-secondary">Clear Search</a>
+                </form>
+                <div class="text-center mt-3" th:if="${searchTerm != null and !searchTerm.isEmpty()}">
+                    <span class="text-sm text-gray-600 italic" th:text="${persons.size()} + ' result(s) found for: ' + ${searchTerm}"></span>
+                </div>
+            </div>
+
+            <!-- Page Size Selector -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+                <div class="flex items-center justify-center gap-4">
+                    <label for="pageSize" class="text-sm font-medium text-gray-700">Items per page:</label>
+                    <select id="pageSize" name="size" onchange="changePageSize(this.value)" class="form-select w-20">
+                        <option value="5" th:selected="${size == 5}">5</option>
+                        <option value="10" th:selected="${size == 10}">10</option>
+                        <option value="20" th:selected="${size == 20}">20</option>
+                        <option value="50" th:selected="${size == 50}">50</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex justify-center gap-4 mb-6">
+                <a href="/persons/add-sample-data" class="btn-primary">Add Sample Data</a>
+                <a href="/persons" class="btn-secondary">Refresh</a>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Passport ID</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${persons.empty}">
+                            <td colspan="6" class="text-center py-4">No persons found</td>
+                        </tr>
+                        <tr th:each="person : ${persons}" class="hover:bg-gray-50">
+                            <td th:text="${person.id}"></td>
+                            <td th:text="${person.firstName}"></td>
+                            <td th:text="${person.lastName}"></td>
+                            <td th:text="${person.passportId}"></td>
+                            <td>
+                                <span th:class="${'px-2 py-1 rounded text-xs font-medium ' + 
+                                    (person.demandeStatus.name() == 'APPROVED' ? 'bg-green-100 text-green-800' : 
+                                    (person.demandeStatus.name() == 'REJECTED' ? 'bg-red-100 text-red-800' : 
+                                    (person.demandeStatus.name() == 'IN_REVIEW' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800')))}"
+                                    th:text="${person.demandeStatus}">
+                                </span>
+                            </td>
+                            <td>
+                                <div class="flex gap-2 justify-center">
+                                    <button class="bg-blue-700 border border-blue-900 text-white rounded-lg w-10 h-10 flex items-center justify-center edit-btn" 
+                                            th:data-person-id="${person.id}"
+                                            th:data-first-name="${person.firstName}"
+                                            th:data-last-name="${person.lastName}"
+                                            th:data-passport-id="${person.passportId}"
+                                            th:data-status="${person.demandeStatus}"
+                                            th:data-passport-image="${person.passportImage}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-4 1a1 1 0 01-1.263-1.263l1-4a4 4 0 01.828-1.414z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div th:if="${totalPages > 1}" class="flex justify-center mt-6">
+                <nav class="flex items-center space-x-2">
+                    <!-- Previous Page -->
+                    <a th:if="${currentPage > 0}" 
+                       th:href="@{/persons(page=${currentPage - 1}, size=${size}, searchType=${searchType}, searchTerm=${searchTerm})}"
+                       class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        Previous
+                    </a>
+                    
+                    <!-- Page Numbers -->
+                    <div class="flex space-x-1">
+                        <a th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+                           th:href="@{/persons(page=${pageNum}, size=${size}, searchType=${searchType}, searchTerm=${searchTerm})}"
+                           th:text="${pageNum + 1}"
+                           th:class="${pageNum == currentPage ? 
+                               'px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-md' : 
+                               'px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50'}">
+                        </a>
+                    </div>
+                    
+                    <!-- Next Page -->
+                    <a th:if="${currentPage < totalPages - 1}" 
+                       th:href="@{/persons(page=${currentPage + 1}, size=${size}, searchType=${searchType}, searchTerm=${searchTerm})}"
+                       class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        Next
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Results Info -->
+            <div class="text-center mt-4 text-sm text-gray-600">
+                <span th:text="'Showing ' + ${persons.size()} + ' of ' + ${totalItems} + ' results'"></span>
+                <span th:if="${totalPages > 1}" th:text="' (Page ' + ${currentPage + 1} + ' of ' + ${totalPages} + ')'"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Person Modal -->
+    <div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Edit Person</h3>
+                    <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <form th:action="@{/persons/update-person}" method="post" enctype="multipart/form-data" id="editForm">
+                    <input type="hidden" id="editPersonId" name="personId">
+                    
+                    <div class="mb-4">
+                        <label for="editFirstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                        <input type="text" id="editFirstName" name="firstName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="editLastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                        <input type="text" id="editLastName" name="lastName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="editPassportId" class="block text-sm font-medium text-gray-700 mb-1">Passport ID</label>
+                        <input type="text" id="editPassportId" name="passportId" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="editDemandeStatus" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <select id="editDemandeStatus" name="demandeStatus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="PENDING">PENDING</option>
+                            <option value="IN_REVIEW">IN_REVIEW</option>
+                            <option value="APPROVED">APPROVED</option>
+                            <option value="REJECTED">REJECTED</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="editPassportImage" class="block text-sm font-medium text-gray-700 mb-1">Passport Image</label>
+                        <input type="file" id="editPassportImage" name="passportImage" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <div id="currentImage" class="mt-2 hidden">
+                            <p class="text-sm text-gray-600">Current image: <span id="currentImageName"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end gap-3">
+                        <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-semibold">Upload Passport Image</h3>
+                <button onclick="closeUploadModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <form th:action="@{/persons/upload-image}" method="post" enctype="multipart/form-data" class="space-y-4">
+                <input type="hidden" id="uploadPersonId" name="personId" />
+                <div>
+                    <label for="passportImage" class="block text-sm font-medium text-gray-700 mb-2">Select passport image:</label>
+                    <input type="file" id="passportImage" name="passportImage" accept="image/*" 
+                           class="w-full px-3 py-2 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:border-blue-500 hover:bg-gray-50 transition-colors" 
+                           onchange="previewImage(this)" required />
+                </div>
+                <div id="imagePreviewContainer" style="display: none;" class="text-center">
+                    <img id="imagePreview" class="max-w-[200px] max-h-[150px] mx-auto border border-gray-200 rounded-md" />
+                </div>
+                <div class="flex gap-3 justify-end">
+                    <button type="button" class="btn-secondary" onclick="closeUploadModal()">Cancel</button>
+                    <button type="submit" class="btn-success">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div id="imageModal" class="modal" style="display: none;">
+        <div class="modal-content max-w-2xl">
+            <div class="modal-header">
+                <h3 id="imageModalTitle" class="text-lg font-semibold">Passport Image</h3>
+                <button onclick="closeImageModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <div class="text-center">
+                <img id="modalImage" class="max-w-full max-h-[400px] rounded-lg shadow-lg mx-auto" />
+            </div>
+            <div id="imageDetails" class="mt-4 p-4 bg-gray-50 rounded-lg text-sm" style="display: none;">
+                <p class="mb-2"><strong>Person:</strong> <span id="personName"></span></p>
+                <p class="mb-2"><strong>Image URL:</strong> <span id="imageUrl" class="text-gray-600"></span></p>
+                <p><strong>Uploaded:</strong> <span id="uploadTime"></span></p>
+            </div>
+            <div class="flex gap-3 justify-center mt-4">
+                <a id="downloadLink" href="#" class="btn-primary text-sm" download>
+                    Download Image
+                </a>
+                <button class="btn-secondary" onclick="closeImageModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openUploadModal(personId, personName) {
+            document.getElementById('uploadPersonId').value = personId;
+            document.querySelector('#uploadModal h3').textContent = 'Upload Passport Image - ' + personName;
+            document.getElementById('uploadModal').style.display = 'flex';
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').style.display = 'none';
+            document.getElementById('imagePreviewContainer').style.display = 'none';
+            document.getElementById('passportImage').value = '';
+        }
+
+        function openImageModal(imageSrc, personName) {
+            const modalImage = document.getElementById('modalImage');
+            const modalTitle = document.getElementById('imageModalTitle');
+            const personNameSpan = document.getElementById('personName');
+            const imageUrlSpan = document.getElementById('imageUrl');
+            const uploadTimeSpan = document.getElementById('uploadTime');
+            const downloadLink = document.getElementById('downloadLink');
+            const imageDetails = document.getElementById('imageDetails');
+
+            modalImage.src = imageSrc;
+            modalTitle.textContent = 'Passport Image - ' + personName;
+            personNameSpan.textContent = personName;
+            imageUrlSpan.textContent = imageSrc;
+            uploadTimeSpan.textContent = new Date().toLocaleString();
+            downloadLink.href = imageSrc;
+            downloadLink.download = 'passport_' + personName.replace(/\s+/g, '_') + '.jpg';
+            imageDetails.style.display = 'block';
+            document.getElementById('imageModal').style.display = 'flex';
+            
+            modalImage.onload = function() {
+                modalImage.style.opacity = '1';
+            };
+            
+            modalImage.onerror = function() {
+                modalImage.style.display = 'none';
+                document.querySelector('#imageModal .modal-content').innerHTML = 
+                    '<div class="modal-header"><h3 class="text-lg font-semibold">Image Not Found</h3><button onclick="closeImageModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>' +
+                    '<div class="text-center py-8"><p class="text-gray-600">The passport image could not be loaded.</p></div>' +
+                    '<div class="flex justify-center"><button class="btn-secondary" onclick="closeImageModal()">Close</button></div>';
+            };
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            const container = document.getElementById('imagePreviewContainer');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    container.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        // Add event listener for edit buttons using event delegation
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.edit-btn')) {
+                    const button = e.target.closest('.edit-btn');
+                    const personId = button.getAttribute('data-person-id');
+                    const firstName = button.getAttribute('data-first-name');
+                    const lastName = button.getAttribute('data-last-name');
+                    const passportId = button.getAttribute('data-passport-id');
+                    const status = button.getAttribute('data-status');
+                    const passportImage = button.getAttribute('data-passport-image');
+                    
+                    openEditModal(personId, firstName, lastName, passportId, status, passportImage);
+                }
+            });
+        });
+
+        function openEditModal(id, firstName, lastName, passportId, status, passportImage) {
+            document.getElementById('editPersonId').value = id;
+            document.getElementById('editFirstName').value = firstName;
+            document.getElementById('editLastName').value = lastName;
+            document.getElementById('editPassportId').value = passportId;
+            document.getElementById('editDemandeStatus').value = status;
+            
+            if (passportImage && passportImage !== 'null') {
+                document.getElementById('currentImage').classList.remove('hidden');
+                document.getElementById('currentImageName').textContent = passportImage;
+            } else {
+                document.getElementById('currentImage').classList.add('hidden');
+            }
+            
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+        
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+        }
+        
+        // Close modal when clicking outside
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const uploadModal = document.getElementById('uploadModal');
+            const imageModal = document.getElementById('imageModal');
+            const editModal = document.getElementById('editModal');
+            if (event.target === uploadModal) {
+                closeUploadModal();
+            }
+            if (event.target === imageModal) {
+                closeImageModal();
+            }
+            if (event.target === editModal) {
+                closeEditModal();
+            }
+        }
+
+        // Add keyboard support for closing modals
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeUploadModal();
+                closeImageModal();
+                closeEditModal();
+            }
+        });
+
+        // Add image loading error handling for table images
+        document.addEventListener('DOMContentLoaded', function() {
+            const passportImages = document.querySelectorAll('.passport-image');
+            passportImages.forEach(function(img) {
+                img.addEventListener('error', function() {
+                    this.style.display = 'none';
+                    const placeholder = this.nextElementSibling;
+                    if (placeholder && placeholder.classList.contains('image-placeholder')) {
+                        placeholder.style.display = 'flex';
+                    }
+                });
+            });
+        });
+
+        // Page size change function
+        function changePageSize(newSize) {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('size', newSize);
+            urlParams.set('page', '0'); // Reset to first page when changing size
+            window.location.href = '/persons?' + urlParams.toString();
+        }
+    </script>
+</body>
+</html> 

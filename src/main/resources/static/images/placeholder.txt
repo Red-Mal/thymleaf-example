@@ -1,0 +1,5 @@
+This directory contains passport images.
+For demo purposes, you can add actual passport images here with names like:
+- sample-passport1.jpg
+- sample-passport2.jpg
+- sample-passport3.jpg 
