@@ -1,0 +1,1 @@
+ALTER TABLE persons ADD COLUMN passport_image_blob BLOB; 

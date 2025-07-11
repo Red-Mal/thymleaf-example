@@ -324,45 +324,4 @@ class PersonServiceTest {
         verify(personRepository).findById(999L);
         verify(personRepository, never()).save(any());
     }
-
-    @Test
-    void uploadPassportImage_WithValidFile_ShouldUpdateImage() {
-        // Arrange
-        MockMultipartFile file = new MockMultipartFile(
-            "file", "test.jpg", "image/jpeg", "test image content".getBytes()
-        );
-        when(personRepository.findById(1L)).thenReturn(Optional.of(testPerson));
-        when(personRepository.save(any(Person.class))).thenReturn(testPerson);
-
-        // Act
-        Person result = personService.uploadPassportImage(1L, file);
-
-        // Assert
-        assertNotNull(result);
-        verify(personRepository).findById(1L);
-        verify(personRepository).save(testPerson);
-    }
-
-    @Test
-    void uploadPassportImage_WithEmptyFile_ShouldThrowException() {
-        // Arrange
-        MockMultipartFile file = new MockMultipartFile("file", new byte[0]);
-
-        // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, 
-            () -> personService.uploadPassportImage(1L, file));
-        assertEquals("File cannot be empty", exception.getMessage());
-        verify(personRepository, never()).findById(any());
-        verify(personRepository, never()).save(any());
-    }
-
-    @Test
-    void uploadPassportImage_WithNullFile_ShouldThrowException() {
-        // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, 
-            () -> personService.uploadPassportImage(1L, null));
-        assertEquals("File cannot be empty", exception.getMessage());
-        verify(personRepository, never()).findById(any());
-        verify(personRepository, never()).save(any());
-    }
 } 

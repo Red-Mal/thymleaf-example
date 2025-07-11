@@ -38,7 +38,11 @@ public class Person {
     private String passportId;
     
     @Column(name = "passport_image")
-    private String passportImage; // This will store the image path or base64 data
+    private String passportImage; // This will be deprecated
+
+    @Lob
+    @Column(name = "passport_image_blob")
+    private byte[] passportImageBlob;
     
     @Enumerated(EnumType.STRING)
     @Column(name = "demande_status", nullable = false)

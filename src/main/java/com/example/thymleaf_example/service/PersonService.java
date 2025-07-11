@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.UUID;
 
@@ -79,64 +80,28 @@ public class PersonService {
         return personRepository.save(person);
     }
 
-    public Person uploadPassportImage(Long id, MultipartFile file) {
-        if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("File cannot be empty");
-        }
-
-        Person person = findById(id);
-        
-        try {
-            // Create upload directory if it doesn't exist
-            Path uploadPath = Paths.get(UPLOAD_DIR);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-
-            // Generate unique filename
-            String originalFilename = file.getOriginalFilename();
-            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String newFilename = "passport_" + id + "_" + UUID.randomUUID().toString() + fileExtension;
-            
-            // Save file
-            Path filePath = uploadPath.resolve(newFilename);
-            Files.copy(file.getInputStream(), filePath);
-            
-            // Update person record with new image path
-            person.setPassportImage("/uploads/" + newFilename);
-            return personRepository.save(person);
-            
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to upload file: " + e.getMessage(), e);
-        }
-    }
-
-    public Person updatePersonWithImage(Long id, Person personDetails, MultipartFile passportImage) {
-        Person person = findById(id);
-        
-        person.setFirstName(personDetails.getFirstName());
-        person.setLastName(personDetails.getLastName());
-        person.setPassportId(personDetails.getPassportId());
-        person.setDemandeStatus(personDetails.getDemandeStatus());
-        
-        if (passportImage != null && !passportImage.isEmpty()) {
-            try {
-                Path uploadPath = Paths.get(UPLOAD_DIR);
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
+    // Add migration method
+    public void migrateImagesToBlob() {
+        List<Person> persons = personRepository.findAll();
+        for (Person person : persons) {
+            if (person.getPassportImageBlob() == null && person.getPassportImage() != null && !person.getPassportImage().isEmpty()) {
+                String imagePath = person.getPassportImage();
+                // Only migrate if path is not a sample image
+                if (imagePath.startsWith("/uploads/") || imagePath.startsWith("/images/")) {
+                    try {
+                        Path path = Paths.get("src/main/resources/static" + imagePath);
+                        if (Files.exists(path)) {
+                            byte[] imageBytes = Files.readAllBytes(path);
+                            person.setPassportImageBlob(imageBytes);
+                            personRepository.save(person);
+                        }
+                    } catch (Exception e) {
+                        // Log and continue
+                        System.err.println("Failed to migrate image for person ID " + person.getId() + ": " + e.getMessage());
+                    }
                 }
-                String originalFilename = passportImage.getOriginalFilename();
-                String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-                String newFilename = "passport_" + id + "_" + UUID.randomUUID().toString() + fileExtension;
-                Path filePath = uploadPath.resolve(newFilename);
-                Files.copy(passportImage.getInputStream(), filePath);
-                person.setPassportImage("/uploads/" + newFilename);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to upload file: " + e.getMessage(), e);
             }
         }
-        
-        return personRepository.save(person);
     }
 
     public Person update(Long id, Person personDetails) {

@@ -48,7 +48,6 @@
             
             <!-- Actions -->
             <div class="flex justify-center gap-4 mb-6">
-                <a href="/persons/add-sample-data" class="btn-primary">Add Sample Data</a>
                 <a href="/persons" class="btn-secondary">Refresh</a>
             </div>
 
@@ -84,15 +83,16 @@
                             </td>
                             <td>
                                 <div class="flex gap-2 justify-center">
-                                    <button class="bg-blue-700 border border-blue-900 text-white rounded-lg w-10 h-10 flex items-center justify-center edit-btn" 
+                                    <button class="bg-blue-700 border border-blue-900 text-white rounded-lg w-10 h-10 flex items-center justify-center edit-btn hover:bg-blue-800" 
                                             th:data-person-id="${person.id}"
                                             th:data-first-name="${person.firstName}"
                                             th:data-last-name="${person.lastName}"
                                             th:data-passport-id="${person.passportId}"
                                             th:data-status="${person.demandeStatus}"
                                             th:data-passport-image="${person.passportImage}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-4 1a1 1 0 01-1.263-1.263l1-4a4 4 0 01.828-1.414z"/>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                         </svg>
                                     </button>
                                 </div>
@@ -153,7 +153,7 @@
                     </button>
                 </div>
                 
-                <form th:action="@{/persons/update-person}" method="post" enctype="multipart/form-data" id="editForm">
+                <form th:action="@{/persons/update-person}" method="post" id="editForm">
                     <input type="hidden" id="editPersonId" name="personId">
                     
                     <div class="mb-4">
@@ -182,8 +182,15 @@
                     </div>
                     
                     <div class="mb-4">
-                        <label for="editPassportImage" class="block text-sm font-medium text-gray-700 mb-1">Passport Image</label>
-                        <input type="file" id="editPassportImage" name="passportImage" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Passport Image</label>
+                        <div class="flex items-center gap-2">
+                            <a id="downloadImageBtn" href="#" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2" style="display: flex !important; visibility: visible !important; opacity: 1 !important; position: relative !important; z-index: 9999 !important;">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                                </svg>
+                                Download Image
+                            </a>
+                        </div>
                         <div id="currentImage" class="mt-2 hidden">
                             <p class="text-sm text-gray-600">Current image: <span id="currentImageName"></span></p>
                         </div>
@@ -199,32 +206,6 @@
                     </div>
                 </form>
             </div>
-        </div>
-    </div>
-
-    <!-- Upload Modal -->
-    <div id="uploadModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="text-lg font-semibold">Upload Passport Image</h3>
-                <button onclick="closeUploadModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
-            </div>
-            <form th:action="@{/persons/upload-image}" method="post" enctype="multipart/form-data" class="space-y-4">
-                <input type="hidden" id="uploadPersonId" name="personId" />
-                <div>
-                    <label for="passportImage" class="block text-sm font-medium text-gray-700 mb-2">Select passport image:</label>
-                    <input type="file" id="passportImage" name="passportImage" accept="image/*" 
-                           class="w-full px-3 py-2 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:border-blue-500 hover:bg-gray-50 transition-colors" 
-                           onchange="previewImage(this)" required />
-                </div>
-                <div id="imagePreviewContainer" style="display: none;" class="text-center">
-                    <img id="imagePreview" class="max-w-[200px] max-h-[150px] mx-auto border border-gray-200 rounded-md" />
-                </div>
-                <div class="flex gap-3 justify-end">
-                    <button type="button" class="btn-secondary" onclick="closeUploadModal()">Cancel</button>
-                    <button type="submit" class="btn-success">Upload</button>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -253,87 +234,6 @@
     </div>
 
     <script>
-        function openUploadModal(personId, personName) {
-            document.getElementById('uploadPersonId').value = personId;
-            document.querySelector('#uploadModal h3').textContent = 'Upload Passport Image - ' + personName;
-            document.getElementById('uploadModal').style.display = 'flex';
-        }
-
-        function closeUploadModal() {
-            document.getElementById('uploadModal').style.display = 'none';
-            document.getElementById('imagePreviewContainer').style.display = 'none';
-            document.getElementById('passportImage').value = '';
-        }
-
-        function openImageModal(imageSrc, personName) {
-            const modalImage = document.getElementById('modalImage');
-            const modalTitle = document.getElementById('imageModalTitle');
-            const personNameSpan = document.getElementById('personName');
-            const imageUrlSpan = document.getElementById('imageUrl');
-            const uploadTimeSpan = document.getElementById('uploadTime');
-            const downloadLink = document.getElementById('downloadLink');
-            const imageDetails = document.getElementById('imageDetails');
-
-            modalImage.src = imageSrc;
-            modalTitle.textContent = 'Passport Image - ' + personName;
-            personNameSpan.textContent = personName;
-            imageUrlSpan.textContent = imageSrc;
-            uploadTimeSpan.textContent = new Date().toLocaleString();
-            downloadLink.href = imageSrc;
-            downloadLink.download = 'passport_' + personName.replace(/\s+/g, '_') + '.jpg';
-            imageDetails.style.display = 'block';
-            document.getElementById('imageModal').style.display = 'flex';
-            
-            modalImage.onload = function() {
-                modalImage.style.opacity = '1';
-            };
-            
-            modalImage.onerror = function() {
-                modalImage.style.display = 'none';
-                document.querySelector('#imageModal .modal-content').innerHTML = 
-                    '<div class="modal-header"><h3 class="text-lg font-semibold">Image Not Found</h3><button onclick="closeImageModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>' +
-                    '<div class="text-center py-8"><p class="text-gray-600">The passport image could not be loaded.</p></div>' +
-                    '<div class="flex justify-center"><button class="btn-secondary" onclick="closeImageModal()">Close</button></div>';
-            };
-        }
-
-        function closeImageModal() {
-            document.getElementById('imageModal').style.display = 'none';
-        }
-
-        function previewImage(input) {
-            const preview = document.getElementById('imagePreview');
-            const container = document.getElementById('imagePreviewContainer');
-            
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    container.style.display = 'block';
-                };
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                container.style.display = 'none';
-            }
-        }
-
-        // Add event listener for edit buttons using event delegation
-        document.addEventListener('DOMContentLoaded', function() {
-            document.addEventListener('click', function(e) {
-                if (e.target.closest('.edit-btn')) {
-                    const button = e.target.closest('.edit-btn');
-                    const personId = button.getAttribute('data-person-id');
-                    const firstName = button.getAttribute('data-first-name');
-                    const lastName = button.getAttribute('data-last-name');
-                    const passportId = button.getAttribute('data-passport-id');
-                    const status = button.getAttribute('data-status');
-                    const passportImage = button.getAttribute('data-passport-image');
-                    
-                    openEditModal(personId, firstName, lastName, passportId, status, passportImage);
-                }
-            });
-        });
-
         function openEditModal(id, firstName, lastName, passportId, status, passportImage) {
             document.getElementById('editPersonId').value = id;
             document.getElementById('editFirstName').value = firstName;
@@ -341,6 +241,10 @@
             document.getElementById('editPassportId').value = passportId;
             document.getElementById('editDemandeStatus').value = status;
             
+            // Always show the download button
+            const downloadBtn = document.getElementById('downloadImageBtn');
+            downloadBtn.href = '/persons/' + id + '/passport-image';
+            downloadBtn.style.display = 'flex';
             if (passportImage && passportImage !== 'null') {
                 document.getElementById('currentImage').classList.remove('hidden');
                 document.getElementById('currentImageName').textContent = passportImage;
@@ -364,26 +268,21 @@
 
         // Close modals when clicking outside
         window.onclick = function(event) {
-            const uploadModal = document.getElementById('uploadModal');
-            const imageModal = document.getElementById('imageModal');
             const editModal = document.getElementById('editModal');
-            if (event.target === uploadModal) {
-                closeUploadModal();
+            const imageModal = document.getElementById('imageModal');
+            if (event.target === editModal) {
+                closeEditModal();
             }
             if (event.target === imageModal) {
                 closeImageModal();
-            }
-            if (event.target === editModal) {
-                closeEditModal();
             }
         }
 
         // Add keyboard support for closing modals
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
-                closeUploadModal();
-                closeImageModal();
                 closeEditModal();
+                closeImageModal();
             }
         });
 
@@ -397,6 +296,22 @@
                     if (placeholder && placeholder.classList.contains('image-placeholder')) {
                         placeholder.style.display = 'flex';
                     }
+                });
+            });
+        });
+
+        // Attach click event to all .edit-btn buttons to open the edit modal
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.edit-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    openEditModal(
+                        btn.getAttribute('data-person-id'),
+                        btn.getAttribute('data-first-name'),
+                        btn.getAttribute('data-last-name'),
+                        btn.getAttribute('data-passport-id'),
+                        btn.getAttribute('data-status'),
+                        btn.getAttribute('data-passport-image')
+                    );
                 });
             });
         });

@@ -15,6 +15,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.StreamUtils;
+import java.io.IOException;
+import java.util.Random;
+
 
 @Controller
 @RequestMapping("/persons")
@@ -86,16 +95,25 @@ public class PersonController {
         return "redirect:/persons";
     }
 
-    @PostMapping("/upload-image")
-    public String uploadImage(@RequestParam Long personId, 
-                             @RequestParam("passportImage") MultipartFile file) {
-        try {
-            personService.uploadPassportImage(personId, file);
-        } catch (Exception e) {
-            // Error will be handled by GlobalExceptionHandler
-            throw e;
+    @GetMapping("/{id}/passport-image")
+    public ResponseEntity<byte[]> downloadPassportImage(@PathVariable Long id) throws IOException {
+        Person person = personService.findById(id);
+        byte[] imageData = person.getPassportImageBlob();
+        if (imageData == null || imageData.length == 0) {
+            // Serve a random image from static/images
+            String[] randomImages = {"static/images/random1.jpg", "static/images/random2.jpg", "static/images/random3.jpg"};
+            int idx = new Random().nextInt(randomImages.length);
+            ClassPathResource imgFile = new ClassPathResource(randomImages[idx]);
+            byte[] randomImageData = StreamUtils.copyToByteArray(imgFile.getInputStream());
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=random.jpg")
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(randomImageData);
         }
-        return "redirect:/persons";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=passport_" + id + ".jpg")
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(imageData);
     }
 
     @PostMapping("/update-person")
@@ -103,67 +121,26 @@ public class PersonController {
                                @RequestParam String firstName,
                                @RequestParam String lastName,
                                @RequestParam String passportId,
-                               @RequestParam Person.DemandeStatus demandeStatus,
-                               @RequestParam(value = "passportImage", required = false) MultipartFile passportImage) {
+                               @RequestParam Person.DemandeStatus demandeStatus) {
         try {
-            Person personDetails = new Person();
-            personDetails.setFirstName(firstName);
-            personDetails.setLastName(lastName);
-            personDetails.setPassportId(passportId);
-            personDetails.setDemandeStatus(demandeStatus);
-            
-            personService.updatePersonWithImage(personId, personDetails, passportImage);
+            Person person = personService.findById(personId);
+            person.setFirstName(firstName);
+            person.setLastName(lastName);
+            person.setPassportId(passportId);
+            person.setDemandeStatus(demandeStatus);
+            personService.save(person);
         } catch (Exception e) {
-            // Error will be handled by GlobalExceptionHandler
             throw e;
         }
         return "redirect:/persons";
     }
 
-    @GetMapping("/add-sample-data")
-    public String addSampleData() {
-        // Add some sample data if the table is empty
-        if (personService.findAll().isEmpty()) {
-            Person person1 = new Person();
-            person1.setFirstName("John");
-            person1.setLastName("Doe");
-            person1.setPassportId("P123456789");
-            person1.setPassportImage("/images/sample-passport1.jpg");
-            person1.setDemandeStatus(Person.DemandeStatus.APPROVED);
-            personService.save(person1);
+    // Remove /add-sample-data endpoint and related logic
 
-            Person person2 = new Person();
-            person2.setFirstName("Jane");
-            person2.setLastName("Smith");
-            person2.setPassportId("P987654321");
-            person2.setPassportImage("/images/sample-passport2.jpg");
-            person2.setDemandeStatus(Person.DemandeStatus.PENDING);
-            personService.save(person2);
-
-            Person person3 = new Person();
-            person3.setFirstName("Michael");
-            person3.setLastName("Johnson");
-            person3.setPassportId("P456789123");
-            person3.setPassportImage("/images/sample-passport3.jpg");
-            person3.setDemandeStatus(Person.DemandeStatus.IN_REVIEW);
-            personService.save(person3);
-
-            Person person4 = new Person();
-            person4.setFirstName("Sarah");
-            person4.setLastName("Williams");
-            person4.setPassportId("P789123456");
-            person4.setPassportImage("/images/sample-passport4.jpg");
-            person4.setDemandeStatus(Person.DemandeStatus.REJECTED);
-            personService.save(person4);
-
-            Person person5 = new Person();
-            person5.setFirstName("David");
-            person5.setLastName("Brown");
-            person5.setPassportId("P321654987");
-            person5.setPassportImage("/images/sample-passport5.jpg");
-            person5.setDemandeStatus(Person.DemandeStatus.PENDING);
-            personService.save(person5);
-        }
+    // Temporary endpoint to migrate images from file path to BLOB
+    @GetMapping("/migrate-images-to-blob")
+    public String migrateImagesToBlob() {
+        personService.migrateImagesToBlob();
         return "redirect:/persons";
     }
 } 
