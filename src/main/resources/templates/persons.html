@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Person Registry</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="/css/tailwind.min.css" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -23,37 +23,37 @@
     <style>
         /* Custom styles */
         .btn-primary {
-            @apply bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors;
+            /* Add fallback styles here if needed */
         }
         .btn-secondary {
-            @apply bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors;
+            /* Add fallback styles here if needed */
         }
         .form-input {
-            @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500;
+            /* Add fallback styles here if needed */
         }
         .form-select {
-            @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500;
+            /* Add fallback styles here if needed */
         }
         .data-table {
-            @apply w-full border-collapse bg-white shadow-lg rounded-lg overflow-hidden;
+            /* Add fallback styles here if needed */
         }
         .data-table th {
-            @apply bg-gray-50 text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider;
+            /* Add fallback styles here if needed */
         }
         .data-table td {
-            @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-t border-gray-200;
+            /* Add fallback styles here if needed */
         }
         .table-container {
-            @apply overflow-x-auto shadow-md rounded-lg;
+            /* Add fallback styles here if needed */
         }
         .modal {
-            @apply fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50;
+            /* Add fallback styles here if needed */
         }
         .modal-content {
-            @apply relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white;
+            /* Add fallback styles here if needed */
         }
         .modal-header {
-            @apply flex justify-between items-center mb-4;
+            /* Add fallback styles here if needed */
         }
     </style>
 </head>
@@ -69,14 +69,14 @@
             <!-- Search Section -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
                 <form th:action="@{/persons/search}" method="get" class="flex flex-wrap gap-4 items-center justify-center">
-                    <select name="searchType" th:value="${searchType}" class="form-select">
+                    <select name="searchType" th:value="${searchType}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="name" th:selected="${searchType == 'name'}">Search by Name</option>
                         <option value="passportId" th:selected="${searchType == 'passportId'}">Search by Passport ID</option>
                     </select>
                     <input type="text" name="searchTerm" th:value="${searchTerm}" 
-                           placeholder="Enter search term..." class="form-input min-w-[200px]" />
-                    <button type="submit" class="btn-primary">Search</button>
-                    <a href="/persons" class="btn-secondary">Clear Search</a>
+                           placeholder="Enter search term..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[200px]" />
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Search</button>
+                    <a href="/persons" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">Clear Search</a>
                 </form>
                 <div class="text-center mt-3" th:if="${searchTerm != null and !searchTerm.isEmpty()}">
                     <span class="text-sm text-gray-600 italic" th:text="${persons.size()} + ' result(s) found for: ' + ${searchTerm}"></span>
@@ -87,7 +87,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
                 <div class="flex items-center justify-center gap-4">
                     <label for="pageSize" class="text-sm font-medium text-gray-700">Items per page:</label>
-                    <select id="pageSize" name="size" onchange="changePageSize(this.value)" class="form-select w-20">
+                    <select id="pageSize" name="size" onchange="changePageSize(this.value)" class="w-20 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="5" th:selected="${size == 5}">5</option>
                         <option value="10" th:selected="${size == 10}">10</option>
                         <option value="20" th:selected="${size == 20}">20</option>
@@ -98,20 +98,20 @@
             
             <!-- Actions -->
             <div class="flex justify-center gap-4 mb-6">
-                <a href="/persons" class="btn-secondary">Refresh</a>
+                <a href="/persons" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">Refresh</a>
             </div>
 
             <!-- Table -->
-            <div class="table-container">
-                <table class="data-table">
+            <div class="overflow-x-auto shadow-md rounded-lg">
+                <table class="w-full border-collapse bg-white shadow-lg rounded-lg overflow-hidden">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Passport ID</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th class="bg-gray-50 text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                            <th class="bg-gray-50 text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">First Name</th>
+                            <th class="bg-gray-50 text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Last Name</th>
+                            <th class="bg-gray-50 text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Passport ID</th>
+                            <th class="bg-gray-50 text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="bg-gray-50 text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -119,11 +119,11 @@
                             <td colspan="6" class="text-center py-4">No persons found</td>
                         </tr>
                         <tr th:each="person : ${persons}" class="hover:bg-gray-50">
-                            <td th:text="${person.id}"></td>
-                            <td th:text="${person.firstName}"></td>
-                            <td th:text="${person.lastName}"></td>
-                            <td th:text="${person.passportId}"></td>
-                            <td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-t border-gray-200" th:text="${person.id}"></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-t border-gray-200" th:text="${person.firstName}"></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-t border-gray-200" th:text="${person.lastName}"></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-t border-gray-200" th:text="${person.passportId}"></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-t border-gray-200">
                                 <span th:class="${'px-2 py-1 rounded text-xs font-medium ' + 
                                     (person.demandeStatus.name() == 'APPROVED' ? 'bg-green-100 text-green-800' : 
                                     (person.demandeStatus.name() == 'REJECTED' ? 'bg-red-100 text-red-800' : 
@@ -131,7 +131,7 @@
                                     th:text="${person.demandeStatus}">
                                 </span>
                             </td>
-                            <td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-t border-gray-200">
                                 <div class="flex gap-2 justify-center">
                                     <button class="bg-blue-700 border border-blue-900 text-white rounded-lg w-10 h-10 flex items-center justify-center edit-btn hover:bg-blue-800" 
                                             th:data-person-id="${person.id}"
@@ -204,7 +204,7 @@
                 </div>
                 
                 <form th:action="@{/persons/update-person}" method="post" id="editForm">
-                    <input type="hidden" id="editPersonId" name="personId">
+                    <input type="hidden" id="editPersonId" name="id" />
                     
                     <div class="mb-4">
                         <label for="editFirstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
@@ -224,19 +224,19 @@
                     <div class="mb-4">
                         <label for="editDemandeStatus" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                         <select id="editDemandeStatus" name="demandeStatus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="PENDING">PENDING</option>
-                            <option value="IN_REVIEW">IN_REVIEW</option>
-                            <option value="APPROVED">APPROVED</option>
-                            <option value="REJECTED">REJECTED</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="APPROVED">Approved</option>
+                            <option value="REJECTED">Rejected</option>
+                            <option value="IN_REVIEW">In Review</option>
                         </select>
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Passport Image</label>
                         <div class="flex items-center gap-2">
-                            <a id="downloadImageBtn" href="#" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2" style="display: flex !important; visibility: visible !important; opacity: 1 !important; position: relative !important; z-index: 9999 !important;">
+                            <a id="downloadImageBtn" href="#" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2" style="display: flex !important; visibility: visible !important; opacity: 1 !important; position: relative !important;">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                                 </svg>
                                 Download Image
                             </a>
@@ -259,10 +259,10 @@
         </div>
     </div>
 
-    <!-- Image Preview Modal -->
-    <div id="imageModal" class="modal" style="display: none;">
-        <div class="modal-content max-w-2xl">
-            <div class="modal-header">
+    <!-- Image Modal -->
+    <div id="imageModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white max-w-2xl">
+            <div class="flex justify-between items-center mb-4">
                 <h3 id="imageModalTitle" class="text-lg font-semibold">Passport Image</h3>
                 <button onclick="closeImageModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
             </div>
@@ -272,13 +272,12 @@
             <div id="imageDetails" class="mt-4 p-4 bg-gray-50 rounded-lg text-sm" style="display: none;">
                 <p class="mb-2"><strong>Person:</strong> <span id="personName"></span></p>
                 <p class="mb-2"><strong>Image URL:</strong> <span id="imageUrl" class="text-gray-600"></span></p>
-                <p><strong>Uploaded:</strong> <span id="uploadTime"></span></p>
             </div>
             <div class="flex gap-3 justify-center mt-4">
-                <a id="downloadLink" href="#" class="btn-primary text-sm" download>
-                    Download Image
+                <a id="downloadLink" href="#" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm" download>
+                    Download
                 </a>
-                <button class="btn-secondary" onclick="closeImageModal()">Close</button>
+                <button class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700" onclick="closeImageModal()">Close</button>
             </div>
         </div>
     </div>
@@ -307,6 +306,10 @@
         
         function closeEditModal() {
             document.getElementById('editModal').classList.add('hidden');
+        }
+        
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.add('hidden');
         }
         
         // Close modal when clicking outside
