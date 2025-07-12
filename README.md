@@ -15,15 +15,14 @@ A modern web application for managing person records with passport information, 
 ## 🛠️ Tech Stack
 
 - **Backend**: Spring Boot 3.5.3, Spring Data JPA, H2 Database
-- **Frontend**: Thymeleaf, Tailwind CSS, JavaScript
-- **Build Tools**: Maven, npm
+- **Frontend**: Thymeleaf, Tailwind CSS (CDN), JavaScript
+- **Build Tools**: Maven
 - **Database**: H2 (in-memory)
 
 ## 📦 Installation & Setup
 
 ### Prerequisites
 - Java 17 or higher
-- Node.js 16 or higher
 - Maven 3.6 or higher
 
 ### 1. Clone and Setup
@@ -32,21 +31,7 @@ git clone <repository-url>
 cd thymleaf-example
 ```
 
-### 2. Install Frontend Dependencies
-```bash
-npm install
-```
-
-### 3. Build Tailwind CSS
-```bash
-# Development (with watch mode)
-npm run build
-
-# Production (minified)
-npm run build:prod
-```
-
-### 4. Run the Application
+### 2. Run the Application
 ```bash
 mvn spring-boot:run
 ```
@@ -55,13 +40,13 @@ The application will be available at: http://localhost:8080
 
 ## 🎨 Tailwind CSS Setup
 
-This project uses Tailwind CSS with a custom configuration optimized for Thymeleaf templates.
+This project uses Tailwind CSS via CDN for simplicity and ease of development.
 
-### Configuration Files
-- `tailwind.config.js` - Tailwind configuration with shadcn/ui compatibility
-- `postcss.config.js` - PostCSS configuration
-- `src/main/resources/static/css/tailwind.css` - Custom Tailwind styles
-- `src/main/resources/static/css/globals.css` - Global styles with CSS variables
+### Features
+- **CDN Version**: No Node.js or npm required
+- **Custom Configuration**: Extended color palette and components
+- **Custom Components**: Pre-built button, form, and table styles
+- **Responsive Design**: Mobile-first approach
 
 ### Custom Components
 The project includes custom Tailwind components for:
@@ -74,25 +59,21 @@ The project includes custom Tailwind components for:
 
 ### Development Workflow
 1. Make changes to HTML templates
-2. Run `npm run build` to watch for changes
-3. Refresh browser to see updates
+2. Refresh browser to see updates
+3. No build process required!
 
 ## 📋 Usage
-
-### Adding Sample Data
-1. Visit http://localhost:8080
-2. Click "Add Sample Data" to populate the table
 
 ### Managing Records
 - **Search**: Use the search form to find people by name or passport ID
 - **Update Status**: Use the dropdown in the Actions column to change status
-- **Upload Images**: Click "Upload" to add passport images
-- **View Images**: Click "View" or the image thumbnail to see full-size images
+- **Edit**: Click the eye icon to edit person details
+- **Download Images**: Click download button to get passport images (real or random)
 
 ### Features
 - **Search**: Real-time search with result count
 - **Status Management**: Four status types with color-coded badges
-- **Image Handling**: Upload, preview, and download passport images
+- **Image Handling**: Download passport images with random fallback
 - **Responsive**: Works on desktop, tablet, and mobile
 
 ## 🗄️ Database
@@ -106,6 +87,7 @@ CREATE TABLE persons (
     last_name VARCHAR(255) NOT NULL,
     passport_id VARCHAR(255) NOT NULL UNIQUE,
     passport_image VARCHAR(255),
+    passport_image_blob BLOB,
     demande_status ENUM('PENDING', 'APPROVED', 'REJECTED', 'IN_REVIEW') NOT NULL
 );
 ```
@@ -122,33 +104,30 @@ Access H2 console at: http://localhost:8080/h2-console
 - `GET /persons` - Display all persons
 - `GET /persons/search` - Search persons
 - `POST /persons/update-status` - Update person status
-- `POST /persons/upload-image` - Upload passport image
-- `GET /persons/add-sample-data` - Add sample data
+- `POST /persons/update-person` - Update person details
+- `GET /persons/{id}/passport-image` - Download passport image
 
 ## 🎨 Customization
 
 ### Adding New Styles
-1. Edit `src/main/resources/static/css/tailwind.css`
-2. Add custom components using `@layer components`
-3. Run `npm run build:prod` to rebuild CSS
+1. Edit the `<style>` section in `persons.html`
+2. Add custom components using `@apply` directive
+3. Refresh browser to see updates
 
 ### Modifying Colors
-1. Update CSS variables in `src/main/resources/static/css/globals.css`
-2. Modify the `:root` selector for light mode
-3. Modify the `.dark` selector for dark mode
+1. Update the `tailwind.config` colors in the HTML
+2. Modify the custom CSS variables
+3. Refresh browser to see changes
 
 ### Adding New Components
-1. Create new component classes in `tailwind.css`
+1. Create new component classes in the `<style>` section
 2. Use `@apply` directive to compose Tailwind utilities
-3. Rebuild CSS and use in templates
+3. Use in templates and refresh browser
 
 ## 🚀 Deployment
 
 ### Production Build
 ```bash
-# Build frontend assets
-npm run build:prod
-
 # Build Spring Boot application
 mvn clean package
 
