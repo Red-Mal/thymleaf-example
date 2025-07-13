@@ -120,30 +120,9 @@ public class PersonController {
 
     @PostMapping("/update-person")
     public String updatePerson(@RequestParam Long personId,
-                               @RequestParam String firstName,
-                               @RequestParam String lastName,
-                               @RequestParam String passportId,
-                               @RequestParam(required = false) String email,
-                               @RequestParam(required = false) String birthDate,
-                               @RequestParam(required = false) String address,
                                @RequestParam Person.DemandeStatus demandeStatus) {
         try {
             Person person = personService.findById(personId);
-            person.setFirstName(firstName);
-            person.setLastName(lastName);
-            person.setPassportId(passportId);
-            person.setEmail(email);
-            person.setAddress(address);
-            
-            if (birthDate != null && !birthDate.trim().isEmpty()) {
-                try {
-                    LocalDate parsedDate = LocalDate.parse(birthDate, DateTimeFormatter.ISO_LOCAL_DATE);
-                    person.setBirthDate(parsedDate);
-                } catch (Exception e) {
-                    // If date parsing fails, leave it null
-                }
-            }
-            
             person.setDemandeStatus(demandeStatus);
             personService.save(person);
         } catch (Exception e) {
