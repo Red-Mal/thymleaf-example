@@ -88,7 +88,10 @@
                                             th:data-last-name="${person.lastName}"
                                             th:data-passport-id="${person.passportId}"
                                             th:data-status="${person.demandeStatus}"
-                                            th:data-passport-image="${person.passportImage}">
+                                            th:data-passport-image="${person.passportImage}"
+                                            th:data-email="${person.email}"
+                                            th:data-birth-date="${person.birthDate}"
+                                            th:data-address="${person.address}">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                           <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                                           <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -141,10 +144,10 @@
 
     <!-- Edit Person Modal -->
     <div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="relative top-20 mx-auto p-5 border w-[800px] shadow-lg rounded-md bg-white max-h-[90vh] overflow-y-auto">
             <div class="mt-3">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-medium text-gray-900">Edit Person</h3>
+                    <h3 class="text-lg font-medium text-gray-900">Edit Person Information</h3>
                     <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -153,34 +156,53 @@
                 </div>
                 
                 <form th:action="@{/persons/update-person}" method="post" id="editForm">
-                    <input type="hidden" id="editPersonId" name="id" />
+                    <input type="hidden" id="editPersonId" name="personId" />
                     
-                    <div class="mb-4">
-                        <label for="editFirstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                        <input type="text" id="editFirstName" name="firstName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <!-- Basic Information -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label for="editFirstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                            <input type="text" id="editFirstName" name="firstName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        
+                        <div>
+                            <label for="editLastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                            <input type="text" id="editLastName" name="lastName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        
+                        <div>
+                            <label for="editPassportId" class="block text-sm font-medium text-gray-700 mb-1">Passport ID</label>
+                            <input type="text" id="editPassportId" name="passportId" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        
+                        <div>
+                            <label for="editEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" id="editEmail" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label for="editBirthDate" class="block text-sm font-medium text-gray-700 mb-1">Birth Date</label>
+                            <input type="date" id="editBirthDate" name="birthDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label for="editDemandeStatus" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                            <select id="editDemandeStatus" name="demandeStatus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="PENDING">Pending</option>
+                                <option value="APPROVED">Approved</option>
+                                <option value="REJECTED">Rejected</option>
+                                <option value="IN_REVIEW">In Review</option>
+                            </select>
+                        </div>
                     </div>
                     
-                    <div class="mb-4">
-                        <label for="editLastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                        <input type="text" id="editLastName" name="lastName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <div class="mb-6">
+                        <label for="editAddress" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                        <textarea id="editAddress" name="address" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                     </div>
                     
-                    <div class="mb-4">
-                        <label for="editPassportId" class="block text-sm font-medium text-gray-700 mb-1">Passport ID</label>
-                        <input type="text" id="editPassportId" name="passportId" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label for="editDemandeStatus" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                        <select id="editDemandeStatus" name="demandeStatus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="PENDING">Pending</option>
-                            <option value="APPROVED">Approved</option>
-                            <option value="REJECTED">Rejected</option>
-                            <option value="IN_REVIEW">In Review</option>
-                        </select>
-                    </div>
-                    
-                    <div class="mb-4">
+                    <!-- Passport Image Section -->
+                    <div class="mb-6">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Passport Image</label>
                         <div class="flex items-center gap-2">
                             <a id="downloadImageBtn" href="#" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2" style="display: flex !important; visibility: visible !important; opacity: 1 !important; position: relative !important;">
@@ -192,6 +214,77 @@
                         </div>
                         <div id="currentImage" class="mt-2 hidden">
                             <p class="text-sm text-gray-600">Current image: <span id="currentImageName"></span></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Child Information Section -->
+                    <div class="mb-6">
+                        <h4 class="text-md font-medium text-gray-900 mb-3">Child Information</h4>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-sm text-gray-600">Child information will be managed separately in a future update.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Beneficiary Information Section -->
+                    <div class="mb-6">
+                        <h4 class="text-md font-medium text-gray-900 mb-3">Beneficiary Information</h4>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-sm text-gray-600">Beneficiary information will be managed separately in a future update.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Documents Section -->
+                    <div class="mb-6">
+                        <h4 class="text-md font-medium text-gray-900 mb-3">Documents</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <a href="/persons/documents/1" class="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm text-center" download>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mx-auto mb-1">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                </svg>
+                                Application Form
+                            </a>
+                            <a href="/persons/documents/2" class="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm text-center" download>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mx-auto mb-1">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                </svg>
+                                Identity Verification
+                            </a>
+                            <a href="/persons/documents/3" class="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm text-center" download>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mx-auto mb-1">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                </svg>
+                                Financial Statement
+                            </a>
+                            <a href="/persons/documents/4" class="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm text-center" download>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mx-auto mb-1">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                </svg>
+                                Employment Certificate
+                            </a>
+                            <a href="/persons/documents/5" class="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm text-center" download>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mx-auto mb-1">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                </svg>
+                                Bank Reference
+                            </a>
+                            <a href="/persons/documents/6" class="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm text-center" download>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mx-auto mb-1">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                </svg>
+                                Medical Certificate
+                            </a>
+                            <a href="/persons/documents/7" class="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm text-center" download>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mx-auto mb-1">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                </svg>
+                                Police Clearance
+                            </a>
+                            <a href="/persons/documents/8" class="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm text-center" download>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mx-auto mb-1">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                </svg>
+                                Tax Declaration
+                            </a>
                         </div>
                     </div>
                     
@@ -232,12 +325,15 @@
     </div>
 
     <script>
-        function openEditModal(id, firstName, lastName, passportId, status, passportImage) {
+        function openEditModal(id, firstName, lastName, passportId, status, passportImage, email, birthDate, address) {
             document.getElementById('editPersonId').value = id;
             document.getElementById('editFirstName').value = firstName;
             document.getElementById('editLastName').value = lastName;
             document.getElementById('editPassportId').value = passportId;
             document.getElementById('editDemandeStatus').value = status;
+            document.getElementById('editEmail').value = email || '';
+            document.getElementById('editBirthDate').value = birthDate || '';
+            document.getElementById('editAddress').value = address || '';
             
             // Always show the download button
             const downloadBtn = document.getElementById('downloadImageBtn');
@@ -312,7 +408,10 @@
                         btn.getAttribute('data-last-name'),
                         btn.getAttribute('data-passport-id'),
                         btn.getAttribute('data-status'),
-                        btn.getAttribute('data-passport-image')
+                        btn.getAttribute('data-passport-image'),
+                        btn.getAttribute('data-email'),
+                        btn.getAttribute('data-birth-date'),
+                        btn.getAttribute('data-address')
                     );
                 });
             });

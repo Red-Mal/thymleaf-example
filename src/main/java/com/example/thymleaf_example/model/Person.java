@@ -4,9 +4,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Email;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "persons")
@@ -37,6 +40,16 @@ public class Person {
     @Column(name = "passport_id", unique = true, nullable = false)
     private String passportId;
     
+    @Email(message = "Please provide a valid email address")
+    @Column(name = "email")
+    private String email;
+    
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
+    
+    @Column(name = "address", length = 500)
+    private String address;
+    
     @Column(name = "passport_image")
     private String passportImage; // This will be deprecated
 
@@ -47,6 +60,12 @@ public class Person {
     @Enumerated(EnumType.STRING)
     @Column(name = "demande_status", nullable = false)
     private DemandeStatus demandeStatus = DemandeStatus.PENDING;
+    
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Child> children;
+    
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Beneficiary> beneficiaries;
     
     public enum DemandeStatus {
         PENDING("Pending"),

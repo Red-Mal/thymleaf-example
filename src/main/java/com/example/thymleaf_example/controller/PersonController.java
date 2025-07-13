@@ -23,6 +23,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StreamUtils;
 import java.io.IOException;
 import java.util.Random;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 
 @Controller
@@ -121,18 +123,65 @@ public class PersonController {
                                @RequestParam String firstName,
                                @RequestParam String lastName,
                                @RequestParam String passportId,
+                               @RequestParam(required = false) String email,
+                               @RequestParam(required = false) String birthDate,
+                               @RequestParam(required = false) String address,
                                @RequestParam Person.DemandeStatus demandeStatus) {
         try {
             Person person = personService.findById(personId);
             person.setFirstName(firstName);
             person.setLastName(lastName);
             person.setPassportId(passportId);
+            person.setEmail(email);
+            person.setAddress(address);
+            
+            if (birthDate != null && !birthDate.trim().isEmpty()) {
+                try {
+                    LocalDate parsedDate = LocalDate.parse(birthDate, DateTimeFormatter.ISO_LOCAL_DATE);
+                    person.setBirthDate(parsedDate);
+                } catch (Exception e) {
+                    // If date parsing fails, leave it null
+                }
+            }
+            
             person.setDemandeStatus(demandeStatus);
             personService.save(person);
         } catch (Exception e) {
             throw e;
         }
         return "redirect:/persons";
+    }
+
+    @GetMapping("/documents/{documentNumber}")
+    public ResponseEntity<byte[]> downloadDocument(@PathVariable int documentNumber) throws IOException {
+        String[] documents = {
+            "static/documents/document1.pdf",
+            "static/documents/document2.pdf", 
+            "static/documents/document3.pdf",
+            "static/documents/document4.pdf",
+            "static/documents/document5.pdf",
+            "static/documents/document6.pdf",
+            "static/documents/document7.pdf",
+            "static/documents/document8.pdf"
+        };
+        
+        if (documentNumber < 1 || documentNumber > documents.length) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        String documentPath = documents[documentNumber - 1];
+        ClassPathResource documentFile = new ClassPathResource(documentPath);
+        
+        if (!documentFile.exists()) {
+            // Return a placeholder PDF or error response
+            return ResponseEntity.notFound().build();
+        }
+        
+        byte[] documentData = StreamUtils.copyToByteArray(documentFile.getInputStream());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=document" + documentNumber + ".pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(documentData);
     }
 
     // Remove /add-sample-data endpoint and related logic
