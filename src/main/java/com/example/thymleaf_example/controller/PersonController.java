@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Random;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 
 @Controller
@@ -116,6 +117,28 @@ public class PersonController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=passport_" + id + ".jpg")
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(imageData);
+    }
+
+    @GetMapping("/{id}/edit")
+    public String showEditPage(@PathVariable Long id, Model model) {
+        Person person = personService.findById(id);
+        model.addAttribute("person", person);
+        model.addAttribute("statuses", Person.DemandeStatus.values());
+        return "person_edit";
+    }
+
+    @PostMapping("/{id}/edit")
+    public String updatePersonOnEditPage(@PathVariable Long id, @ModelAttribute Person person, @RequestParam Person.DemandeStatus demandeStatus) {
+        Person existing = personService.findById(id);
+        existing.setFirstName(person.getFirstName());
+        existing.setLastName(person.getLastName());
+        existing.setPassportId(person.getPassportId());
+        existing.setEmail(person.getEmail());
+        existing.setBirthDate(person.getBirthDate());
+        existing.setAddress(person.getAddress());
+        existing.setDemandeStatus(demandeStatus);
+        personService.save(existing);
+        return "redirect:/persons";
     }
 
     @PostMapping("/update-person")

@@ -82,21 +82,12 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-t border-gray-200">
                                 <div class="flex gap-2 justify-center">
-                                    <button class="bg-blue-700 border border-blue-900 text-white rounded-lg w-10 h-10 flex items-center justify-center edit-btn hover:bg-blue-800" 
-                                            th:data-person-id="${person.id}"
-                                            th:data-first-name="${person.firstName}"
-                                            th:data-last-name="${person.lastName}"
-                                            th:data-passport-id="${person.passportId}"
-                                            th:data-status="${person.demandeStatus}"
-                                            th:data-passport-image="${person.passportImage}"
-                                            th:data-email="${person.email}"
-                                            th:data-birth-date="${person.birthDate}"
-                                            th:data-address="${person.address}">
+                                    <a th:href="@{'/persons/' + ${person.id} + '/edit'}" class="bg-blue-700 border border-blue-900 text-white rounded-lg w-10 h-10 flex items-center justify-center hover:bg-blue-800" title="Edit">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                         </svg>
-                                    </button>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
