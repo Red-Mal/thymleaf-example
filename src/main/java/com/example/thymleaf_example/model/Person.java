@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "persons")
@@ -61,11 +62,32 @@ public class Person {
     @Column(name = "demande_status", nullable = false)
     private DemandeStatus demandeStatus = DemandeStatus.PENDING;
     
-    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Child> children;
+    @Column(name = "code_client", unique = true)
+    private String codeClient;
+
+    @Column(name = "type_operation")
+    private String typeOperation;
+
+    @Column(name = "creation_date")
+    private LocalDate creationDate;
+
+    @Column(name = "dossier_status")
+    private String dossierStatus;
+
+    @Column(name = "dossier_name")
+    private String dossierName;
+
+    @Column(name = "phone")
+    private String phone;
     
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Beneficiary> beneficiaries;
+    private List<Child> children = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Beneficiary> beneficiaries = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<TransferReason> transferReasons = new ArrayList<>();
     
     public enum DemandeStatus {
         PENDING("Pending"),

@@ -1,7 +1,11 @@
 package com.example.thymleaf_example.service;
 
+import com.example.thymleaf_example.model.Beneficiary;
 import com.example.thymleaf_example.model.Person;
+import com.example.thymleaf_example.model.TransferReason;
+import com.example.thymleaf_example.repository.BeneficiaryRepository;
 import com.example.thymleaf_example.repository.PersonRepository;
+import com.example.thymleaf_example.repository.TransferReasonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +24,10 @@ import java.util.UUID;
 public class PersonService {
     @Autowired
     private PersonRepository personRepository;
+    @Autowired
+    private BeneficiaryRepository beneficiaryRepository;
+    @Autowired
+    private TransferReasonRepository transferReasonRepository;
 
     private static final String UPLOAD_DIR = "src/main/resources/static/uploads/";
 
@@ -120,5 +128,47 @@ public class PersonService {
             throw new RuntimeException("Person not found with id: " + id);
         }
         personRepository.deleteById(id);
+    }
+
+    /**
+     * Returns a Person with all details needed for the edit page, including beneficiaries and transfer reasons.
+     */
+    public Person getEditDetailsById(Long id) {
+        Person person = findById(id);
+        // Force initialization of lazy collections if needed
+        if (person.getBeneficiaries() != null) {
+            person.getBeneficiaries().size();
+        }
+        if (person.getTransferReasons() != null) {
+            person.getTransferReasons().size();
+        }
+        if (person.getChildren() != null) {
+            person.getChildren().size();
+        }
+        return person;
+    }
+
+    /**
+     * Adds a new Beneficiary to a Person and saves both.
+     */
+    public Beneficiary addBeneficiaryToPerson(Long personId, Beneficiary beneficiary) {
+        Person person = findById(personId);
+        beneficiary.setPerson(person);
+        Beneficiary saved = beneficiaryRepository.save(beneficiary);
+        person.getBeneficiaries().add(saved);
+        personRepository.save(person);
+        return saved;
+    }
+
+    /**
+     * Adds a new TransferReason to a Person and saves both.
+     */
+    public TransferReason addTransferReasonToPerson(Long personId, TransferReason transferReason) {
+        Person person = findById(personId);
+        transferReason.setPerson(person);
+        TransferReason saved = transferReasonRepository.save(transferReason);
+        person.getTransferReasons().add(saved);
+        personRepository.save(person);
+        return saved;
     }
 } 

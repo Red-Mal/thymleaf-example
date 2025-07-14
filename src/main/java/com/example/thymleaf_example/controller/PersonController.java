@@ -121,7 +121,7 @@ public class PersonController {
 
     @GetMapping("/{id}/edit")
     public String showEditPage(@PathVariable Long id, Model model) {
-        Person person = personService.findById(id);
+        Person person = personService.getEditDetailsById(id);
         model.addAttribute("person", person);
         model.addAttribute("statuses", Person.DemandeStatus.values());
         return "person_edit";

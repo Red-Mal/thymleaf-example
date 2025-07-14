@@ -28,6 +28,15 @@ public class Beneficiary {
     @Column(name = "swift_code", nullable = false)
     private String swiftCode;
     
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "city")
+    private String city;
+
+    @Column(name = "country")
+    private String country;
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "person_id", nullable = false)
     private Person person;
