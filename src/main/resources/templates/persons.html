@@ -157,65 +157,10 @@
     </div>
 
     <script>
-        function openEditModal(id, firstName, lastName, passportId, status, passportImage, email, birthDate, address) {
-            document.getElementById('editPersonId').value = id;
-            document.getElementById('editFirstName').value = firstName;
-            document.getElementById('editLastName').value = lastName;
-            document.getElementById('editPassportId').value = passportId;
-            document.getElementById('editDemandeStatus').value = status;
-            document.getElementById('editEmail').value = email || '';
-            document.getElementById('editBirthDate').value = birthDate || '';
-            document.getElementById('editAddress').value = address || '';
-            
-            // Always show the download button
-            const downloadBtn = document.getElementById('downloadImageBtn');
-            downloadBtn.href = '/persons/' + id + '/passport-image';
-            downloadBtn.style.display = 'flex';
-            if (passportImage && passportImage !== 'null') {
-                document.getElementById('currentImage').classList.remove('hidden');
-                document.getElementById('currentImageName').textContent = passportImage;
-            } else {
-                document.getElementById('currentImage').classList.add('hidden');
-            }
-            
-            document.getElementById('editModal').classList.remove('hidden');
-        }
-        
-        function closeEditModal() {
-            document.getElementById('editModal').classList.add('hidden');
-        }
-        
         function closeImageModal() {
             document.getElementById('imageModal').classList.add('hidden');
         }
         
-        // Close modal when clicking outside
-        document.getElementById('editModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeEditModal();
-            }
-        });
-
-        // Close modals when clicking outside
-        window.onclick = function(event) {
-            const editModal = document.getElementById('editModal');
-            const imageModal = document.getElementById('imageModal');
-            if (event.target === editModal) {
-                closeEditModal();
-            }
-            if (event.target === imageModal) {
-                closeImageModal();
-            }
-        }
-
-        // Add keyboard support for closing modals
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeEditModal();
-                closeImageModal();
-            }
-        });
-
         // Add image loading error handling for table images
         document.addEventListener('DOMContentLoaded', function() {
             const passportImages = document.querySelectorAll('.passport-image');
@@ -226,25 +171,6 @@
                     if (placeholder && placeholder.classList.contains('image-placeholder')) {
                         placeholder.style.display = 'flex';
                     }
-                });
-            });
-        });
-
-        // Attach click event to all .edit-btn buttons to open the edit modal
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.edit-btn').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    openEditModal(
-                        btn.getAttribute('data-person-id'),
-                        btn.getAttribute('data-first-name'),
-                        btn.getAttribute('data-last-name'),
-                        btn.getAttribute('data-passport-id'),
-                        btn.getAttribute('data-status'),
-                        btn.getAttribute('data-passport-image'),
-                        btn.getAttribute('data-email'),
-                        btn.getAttribute('data-birth-date'),
-                        btn.getAttribute('data-address')
-                    );
                 });
             });
         });
